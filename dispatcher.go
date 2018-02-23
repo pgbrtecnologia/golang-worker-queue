@@ -5,13 +5,23 @@ type Dispatcher struct {
 	workerCount int
 	queue       chan IJob
 	workers     []*worker
+	managing    chan IJob
 }
 
 // GetDispatcher creates and returns a new Dispatcher
 func GetDispatcher() *Dispatcher {
 	queue := make(chan IJob)
+	managing := make(chan IJob)
+
+	managerObj := manager{
+		queue:    queue,
+		managing: managing}
+
+	go managerObj.start()
+
 	return &Dispatcher{
-		queue: queue}
+		queue:    queue,
+		managing: managing}
 }
 
 // StopAllWorkers actually does what it says it does.
@@ -60,5 +70,20 @@ func (d *Dispatcher) AddJob(job IJob) {
 		d.addWorker()
 	}
 
-	d.queue <- job
+	d.managing <- job
+}
+
+type manager struct {
+	queue    chan IJob
+	managing chan IJob
+}
+
+func (m *manager) start() {
+	for {
+		select {
+		case job := <-m.managing:
+			m.queue <- job
+		default:
+		}
+	}
 }
