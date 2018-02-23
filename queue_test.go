@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	queue "github.com/PhillBeck/golang-worker-queue"
+	queue "github.com/pgbrtecnologia/golang-worker-queue"
 )
 
 type Job struct {

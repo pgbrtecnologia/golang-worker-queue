@@ -4,7 +4,7 @@ Golang worker queue is a simple golang concurrent task runner.
 
 ## Installation
 ```
-go get github.com/pgbrdesenvolvimento/golang-worker-queue
+go get github.com/pgbrtecnologia/golang-worker-queue
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"time"
 
-	queue "github.com/pgbrdesenvolvimento/golang-worker-queue"
+	queue "github.com/pgbrtecnologia/golang-worker-queue"
 )
 
 type Job struct {
