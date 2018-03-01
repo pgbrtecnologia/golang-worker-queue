@@ -28,8 +28,8 @@ func GetDispatcher() *Dispatcher {
 // Note: The workers will not be killed instantly, they will
 // finish executing the current job before stopping
 func (d *Dispatcher) StopAllWorkers() {
-	for _, worker := range d.workers {
-		worker.quit <- true
+	for _ = range d.workers {
+		d.queue <- nil
 	}
 }
 
@@ -51,15 +51,14 @@ func (d *Dispatcher) SetWorkerCount(n int) {
 }
 
 func (d *Dispatcher) addWorker() {
-	quit := make(chan bool)
-	worker := newWorker(d.queue, quit)
+	worker := newWorker(d.queue)
 	go worker.start()
 	d.workers = append(d.workers, worker)
 }
 
 func (d *Dispatcher) removeWorker() {
 	if len(d.workers) > 1 {
-		d.workers[0].quit <- true
+		d.queue <- nil
 	}
 }
 
@@ -80,10 +79,8 @@ type manager struct {
 
 func (m *manager) start() {
 	for {
-		select {
-		case job := <-m.managing:
-			m.queue <- job
-		default:
-		}
+		job := <-m.managing
+		m.queue <- job
+
 	}
 }
